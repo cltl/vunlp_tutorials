@@ -1,0 +1,3 @@
+[submodule "nlp_transformer_tutorials"]
+	path = nlp_transformer_tutorials
+	url = https://github.com/cltl/nlp_transformer_tutorials.git

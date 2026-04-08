@@ -1,0 +1,35 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: NLP Transformers
+author: Leon Eshuijs
+logo: logo_nlp.png
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  stderr_output: remove
+  execute_notebooks: off
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/cltl/vunlp_tutorials
+  branch: main
+
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
+
+sphinx:
+  config:
+    html_static_path: ['_static']
+    html_css_files:
+      - custom.css
+    html_js_files:
+      - toggle_sidebar.js
+
+    html_theme_options:
+      show_toc_level: 1
+      show_navbar_depth: 1

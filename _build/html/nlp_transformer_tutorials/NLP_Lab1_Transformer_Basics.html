@@ -1,0 +1,1185 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Lab 1: Transformer Basics — Tokenization &amp; Text Generation &#8212; NLP Transformers</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f80c9d9d" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'nlp_transformer_tutorials/NLP_Lab1_Transformer_Basics';</script>
+    <script src="../_static/toggle_sidebar.js?v=8b69a89f"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Part 2. Transformer from Scratch." href="NLP_Lab2_Building_Transformers.html" />
+    <link rel="prev" title="NLP Transformers - Tutorial Notebooks" href="../intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_nlp.png" class="logo__image only-light" alt="NLP Transformers - Home"/>
+    <script>document.write(`<img src="../_static/logo_nlp.png" class="logo__image only-dark" alt="NLP Transformers - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lab 1 - Transformer Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NLP_Lab2_Building_Transformers.html">Part 2. Transformer from Scratch.</a></li>
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/nlp_transformer_tutorials/NLP_Lab1_Transformer_Basics.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lab 1: Transformer Basics — Tokenization & Text Generation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#content-learning-objectives">Content &amp; Learning Objectives</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-env">Install Env</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-packages">Load Packages</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-the-point-of-a-transformer">What is the point of a transformer?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-is-the-model-trained">How is the model trained?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tokens-transformer-inputs">Tokens - Transformer Inputs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-sub-units-to-vectors">Converting sub-units to vectors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-language-into-sub-units">Splitting language into sub-units</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformerlens">TransformerLens</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#some-tokenization-annoyances">Some tokenization annoyances</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#whether-a-word-begins-with-a-capital-or-space-matters">Whether a word begins with a capital or space matters!</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tokenization-exploration-exercise-1">Tokenization Exploration (Exercise 1)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#arithmetic-is-a-mess">Arithmetic is a mess.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#text-generation">Text generation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-convert-text-to-tokens"><strong>Step 1:</strong> Convert text to tokens</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-map-tokens-to-logits"><strong>Step 2:</strong> Map tokens to logits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-convert-the-logits-to-a-distribution-with-a-softmax"><strong>Step 3:</strong> Convert the logits to a distribution with a softmax</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implement-softmax-exercise-2">Implement Softmax (Exercise 2)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bonus-step-what-is-the-most-likely-next-token-at-each-position"><strong>Bonus step:</strong> What is the most likely next token at each position?</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#top-k-predictions-exercise-3">Top-K Predictions (Exercise 3)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-map-distribution-to-a-token"><strong>Step 4:</strong> Map distribution to a token</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-add-this-to-the-end-of-the-input-re-run"><strong>Step 5:</strong> Add this to the end of the input, re-run</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temperature-sampling-exercise-4">Temperature Sampling (Exercise 4)</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lab-1-transformer-basics-tokenization-text-generation">
+<h1>Lab 1: Transformer Basics — Tokenization &amp; Text Generation<a class="headerlink" href="#lab-1-transformer-basics-tokenization-text-generation" title="Link to this heading">#</a></h1>
+<p><a class="reference external" href="https://github.com/cltl/nlp_transformer_tutorials/blob/main/NLP_Lab1_Transformer_Basics.ipynb"><img alt="View notebooks on Github" src="https://img.shields.io/static/v1.svg?logo=github&amp;label=Repo&amp;message=View%20On%20Github&amp;color=lightgrey" /></a>
+<a class="reference external" href="https://colab.research.google.com/github/cltl/nlp_transformer_tutorials/blob/main/NLP_Lab1_Transformer_Basics.ipynb"><img alt="Open In Collab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<ul class="simple">
+<li><p>This notebook is adapted from the <a class="reference external" href="https://www.arena.education/">ARENA</a> research program, which provides excellent tutorial notebooks and walkthroughs for several topics related to alignment and the safety of AI. Since their explanations are very good, we won’t try to redo theirs, but we adapt their setup, as they go a bit more in-depth on parts we will leave out for now. We have also restructured the notebooks and made other modifications to be a more standalone exercise.</p></li>
+<li><p>These notebooks walk us through the Transformer architecture as sketched in <a class="reference external" href="https://transformer-circuits.pub/2021/framework/index.html">this excellent post</a> on the transformer. The main point is that seeing the transformer as a residual network, and separating it into the individual components, gives us a lot more power to understand them!</p></li>
+</ul>
+<p>This is the first of three lab notebooks on transformers. In this notebook, we explore what a transformer does at a high level: how text is tokenized into integers, how those integers become vectors, what the model’s output (logits) represents, and how we can use it to generate text autoregressively. We focus on GPT-2 as our running example.</p>
+<p>In the next notebook (<em>Lab 2: Building a Transformer from Scratch</em>), we will implement every component of the transformer architecture ourselves (embeddings, attention, MLPs, and the full model) and train it on a real dataset.</p>
+<p>If you prefer to get familiar with the technical details via a video, we recommend watching this <a class="reference external" href="https://youtu.be/eMlx5fFNoYc?si=P4zsYydKyLPc0HIY">youtube video</a>.</p>
+<p><strong>Note for Running on Colab</strong> If you’re running this in Google Colab, make sure to use the GPU.</p>
+<ul class="simple">
+<li><p>Click the arrow on the right top, next to “RAM and DISK”</p></li>
+<li><p>Select “Change Runtime Type” -&gt; Click <code class="docutils literal notranslate"><span class="pre">T4</span> <span class="pre">GPU</span></code></p></li>
+</ul>
+<section id="content-learning-objectives">
+<h2>Content &amp; Learning Objectives<a class="headerlink" href="#content-learning-objectives" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><h5 class="rubric" id="learning-objectives">Learning Objectives</h5>
+<ul class="simple">
+<li><p>Understand what a transformer is used for</p></li>
+<li><p>Understand causal attention, and what a transformer’s output represents</p></li>
+<li><p>Learn what tokenization is, and how models do it</p></li>
+<li><p>Understand what logits are, and how to use them to derive a probability distribution over the vocabulary</p></li>
+<li><p>Walk through the full text generation pipeline step by step</p></li>
+</ul>
+</div></blockquote>
+<section id="install-env">
+<h3>Install Env<a class="headerlink" href="#install-env" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="n">IN_COLAB</span> <span class="o">=</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
+
+<span class="c1"># Install dependencies</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">transformer_lens</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="o">%</span><span class="k">pip</span> install transformer_lens==2.17.0 jaxtyping git+https://github.com/callummcdougall/CircuitsVis.git#subdirectory=python
+
+<span class="c1"># Clone the course repo (only needed in Colab)</span>
+<span class="k">if</span> <span class="n">IN_COLAB</span><span class="p">:</span>
+    <span class="n">repo_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/cltl/nlp_transformer_tutorials.git&quot;</span>
+    <span class="n">repo_dir</span> <span class="o">=</span> <span class="s2">&quot;/content/nlp_transformer_tutorials&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">repo_dir</span><span class="p">):</span>
+        <span class="o">!</span>git<span class="w"> </span>clone<span class="w"> </span><span class="o">{</span>repo_url<span class="o">}</span><span class="w"> </span><span class="o">{</span>repo_dir<span class="o">}</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">repo_dir</span><span class="p">)</span>
+
+<span class="c1"># Make sure the repo root is on the Python path so `import utils.tests_part2` works</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-packages">
+<h3>Load Packages<a class="headerlink" href="#load-packages" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">t</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformer_lens</span><span class="w"> </span><span class="kn">import</span> <span class="n">HookedTransformer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+
+<span class="n">device</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;mps&quot;</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="what-is-the-point-of-a-transformer">
+<h2>What is the point of a transformer?<a class="headerlink" href="#what-is-the-point-of-a-transformer" title="Link to this heading">#</a></h2>
+<p><strong>Transformers exist to model text!</strong></p>
+<p>We’re going to focus GPT-2 style transformers. Key feature: They generate text! You feed in language, and the model generates a probability distribution over tokens. And you can repeatedly sample from this to generate text!</p>
+<p>(To explain this in more detail - you feed in a sequence of length <span class="math notranslate nohighlight">\(N\)</span>, then sample from the probability distribution over the <span class="math notranslate nohighlight">\(N+1\)</span>-th word, use this to construct a new sequence of length <span class="math notranslate nohighlight">\(N+1\)</span>, then feed this new sequence into the model to get a probability distribution over the <span class="math notranslate nohighlight">\(N+2\)</span>-th word, and so on.)</p>
+<section id="how-is-the-model-trained">
+<h3>How is the model trained?<a class="headerlink" href="#how-is-the-model-trained" title="Link to this heading">#</a></h3>
+<p>You give it a bunch of text, and train it to predict the next token.</p>
+<p>Importantly, if you give a model 100 tokens in a sequence, it predicts the next token for <em>each</em> prefix, i.e. it produces 100 logit vectors (= probability distributions) over the set of all words in our vocabulary, with the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th logit vector representing the probability distribution over the token <em>following</em> the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th token in the sequence. This is a key part of what allows transformers to be trained so efficiently; for every sequence of length <span class="math notranslate nohighlight">\(n\)</span> we get <span class="math notranslate nohighlight">\(n\)</span> different predictions to train on:</p>
+<div class="math notranslate nohighlight">
+\[
+ p(x_1), \; p(x_2|x_1), \; p(x_3|x_1x_2), \; \ldots, \; p(x_n|x_1 \ldots x_{n-1})
+ \]</div>
+ <details>
+ <summary>Aside - logits</summary>
+<p>If you haven’t encountered the term “logits” before, here’s a quick refresher.</p>
+<p>Given an arbitrary vector <span class="math notranslate nohighlight">\(x\)</span>, we can turn it into a probability distribution via the <strong>softmax</strong> function: <span class="math notranslate nohighlight">\(x_i \to \frac{e^{x_i}}{\sum e^{x_j}}\)</span>. The exponential makes everything positive; the normalization makes it add to one.</p>
+<p>The model’s output is the vector <span class="math notranslate nohighlight">\(x\)</span> (one for each prediction it makes). We call this vector a logit because it represents a probability distribution, and it is related to the actual probabilities via the softmax function.</p>
+ </details>
+<p>How do we stop the transformer by “cheating” by just looking at the tokens it’s trying to predict? Answer - we make the transformer have <em>causal attention</em> (as opposed to <em>bidirectional attention</em>). Causal attention only allows information to move forwards in the sequence, never backwards. The prediction of what comes after token 50 is only a function of the first 50 tokens, <em>not</em> of token 51. We say the transformer is <strong>autoregressive</strong>, because it only predicts future words based on past data.</p>
+ <img src="https://raw.githubusercontent.com/info-arena/ARENA_img/main/misc/transformer-overview-new.png" width="900"><p>Another way to view this is through the following analogy: we have a series of people standing in a line, each with one word or chunk of the sentence. Each person has the ability to look up information from the people behind them (we’ll explore how this works in later sections) but they can’t look at any information in front of them. Their goal is to guess what word the person in front of them is holding.</p>
+ <img src="https://raw.githubusercontent.com/info-arena/ARENA_img/main/misc/intro-image-v2.png" width="600"></section>
+</section>
+<section id="tokens-transformer-inputs">
+<h2>Tokens - Transformer Inputs<a class="headerlink" href="#tokens-transformer-inputs" title="Link to this heading">#</a></h2>
+<p>Our transformer’s input is natural language (i.e. a sequence of characters, strings, etc). But ML models generally take vectors as input, not language. How do we convert language to vectors?</p>
+<p>We can factor this into 2 questions:</p>
+<ol class="arabic simple">
+<li><p>How do we split up language into small sub-units?</p></li>
+<li><p>How do we convert these sub-units into vectors?</p></li>
+</ol>
+<p>Let’s start with the second of these questions.</p>
+<section id="converting-sub-units-to-vectors">
+<h3>Converting sub-units to vectors<a class="headerlink" href="#converting-sub-units-to-vectors" title="Link to this heading">#</a></h3>
+<p>We basically make a massive lookup table, which is called an <strong>embedding</strong>. It has one vector for each possible sub-unit of language we might get (we call this set of all sub-units our <strong>vocabulary</strong>). We label every element in our vocabulary with an integer (this labelling never changes), and we use this integer to index into the embedding.</p>
+<p>A key intuition is that one-hot encodings let you think about each integer independently. We don’t bake in any relation between words when we perform our embedding, because every word has a completely separate embedding vector.</p>
+ <details>
+ <summary>Aside - one-hot encodings</summary>
+<p>We sometimes think about <strong>one-hot encodings</strong> of words. These are vectors with zeros everywhere, except for a single one in the position corresponding to the word’s index in the vocabulary. This means that indexing into the embedding is equivalent to multiplying the <strong>embedding matrix</strong> by the one-hot encoding (where the embedding matrix is the matrix we get by stacking all the embedding vectors on top of each other).</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ \begin{aligned}
+ W_E &amp;= \begin{bmatrix}
+ \leftarrow v_0 \rightarrow \\
+ \leftarrow v_1 \rightarrow \\
+ \vdots \\
+ \leftarrow v_{d_{vocab}-1} \rightarrow \\
+ \end{bmatrix} \quad \text{is the embedding matrix (size }d_{vocab} \times d_{embed}\text{),} \\
+ \\
+ t_i &amp;= (0, \dots, 0, 1, 0, \dots, 0) \quad \text{is the one-hot encoding for the }i\text{th word (length }d_{vocab}\text{)} \\
+ \\
+ v_i &amp;= t_i W_E \quad \text{is the embedding vector for the }i\text{th word (length }d_{embed}\text{).} \\
+ \end{aligned}
+ \end{split}\]</div>
+ </details>
+<p>Now, let’s answer the first question - how do we split language into sub-units?</p>
+</section>
+<section id="splitting-language-into-sub-units">
+<h3>Splitting language into sub-units<a class="headerlink" href="#splitting-language-into-sub-units" title="Link to this heading">#</a></h3>
+<p>We need to define a standard way of splitting up language into a series of substrings, where each substring is a member of our <strong>vocabulary</strong> set.</p>
+<p>Could we use a dictionary, and have our vocabulary be the set of all words in the dictionary? No, because this couldn’t handle arbitrary text (e.g. URLs, punctuation, etc). We need a more general way of splitting up language.</p>
+<p>Could we just use the 256 ASCII characters? This fixes the previous problem, but it loses structure of language - some sequences of characters are more meaningful than others. For example, “language” is a lot more meaningful than “hjksdfiu”. We want “language” to be a single token, but not “hjksdfiu” - this is a more efficient use of our vocab.</p>
+<p>What actually happens? The most common strategy is called <strong>Byte-Pair encodings</strong>.</p>
+<p>We begin with the 256 ASCII characters as our tokens, and then find the most common pair of tokens, and merge that into a new token. Note that we do have a space character as one of our 256 tokens, and merges using space are very common. For instance, here are the five first merges for the tokenizer used by GPT-2 (you’ll be able to verify this below).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot; t&quot;</span>
+<span class="s2">&quot; a&quot;</span>
+<span class="s2">&quot;he&quot;</span>
+<span class="s2">&quot;in&quot;</span>
+<span class="s2">&quot;re&quot;</span>
+</pre></div>
+</div>
+<p>Note - you might see the character <code class="docutils literal notranslate"><span class="pre">Ġ</span></code> in front of some tokens. This is a special token that indicates that the token begins with a space. Tokens with a leading space vs not are different.</p>
+</section>
+<section id="transformerlens">
+<h3>TransformerLens<a class="headerlink" href="#transformerlens" title="Link to this heading">#</a></h3>
+<p>In this course we use <a class="reference external" href="https://github.com/TransformerLensOrg/TransformerLens">TransformerLens</a>, a library built for mechanistic interpretability research. Unlike the standard HuggingFace <code class="docutils literal notranslate"><span class="pre">transformers</span></code> library (which is designed for training and inference), TransformerLens gives us direct access to every intermediate activation inside the model (attention patterns, residual stream values, MLP outputs, etc.) via a clean hook-based API. It also provides convenient utilities like <code class="docutils literal notranslate"><span class="pre">to_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">to_str_tokens</span></code>, and <code class="docutils literal notranslate"><span class="pre">run_with_cache</span></code> that we’ll use extensively.</p>
+<p>We load models using <code class="docutils literal notranslate"><span class="pre">HookedTransformer.from_pretrained(...)</span></code> instead of the HuggingFace <code class="docutils literal notranslate"><span class="pre">AutoModel</span></code>. Let’s load GPT-2 small and explore its tokenizer vocabulary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reference_gpt2</span> <span class="o">=</span> <span class="n">HookedTransformer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+    <span class="s2">&quot;gpt2-small&quot;</span><span class="p">,</span>
+    <span class="n">fold_ln</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">center_unembed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">center_writing_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># these arguments relate to how TransformerLens handles layer normalization — not important for now</span>
+<span class="p">)</span>
+
+<span class="n">sorted_vocab</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sorted_vocab</span><span class="p">[:</span><span class="mi">20</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sorted_vocab</span><span class="p">[</span><span class="mi">250</span><span class="p">:</span><span class="mi">270</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sorted_vocab</span><span class="p">[</span><span class="mi">990</span><span class="p">:</span><span class="mi">1010</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loaded pretrained model gpt2-small into HookedTransformer
+[(&#39;!&#39;, 0), (&#39;&quot;&#39;, 1), (&#39;#&#39;, 2), (&#39;$&#39;, 3), (&#39;%&#39;, 4), (&#39;&amp;&#39;, 5), (&quot;&#39;&quot;, 6), (&#39;(&#39;, 7), (&#39;)&#39;, 8), (&#39;*&#39;, 9), (&#39;+&#39;, 10), (&#39;,&#39;, 11), (&#39;-&#39;, 12), (&#39;.&#39;, 13), (&#39;/&#39;, 14), (&#39;0&#39;, 15), (&#39;1&#39;, 16), (&#39;2&#39;, 17), (&#39;3&#39;, 18), (&#39;4&#39;, 19)]
+
+[(&#39;ľ&#39;, 250), (&#39;Ŀ&#39;, 251), (&#39;ŀ&#39;, 252), (&#39;Ł&#39;, 253), (&#39;ł&#39;, 254), (&#39;Ń&#39;, 255), (&#39;Ġt&#39;, 256), (&#39;Ġa&#39;, 257), (&#39;he&#39;, 258), (&#39;in&#39;, 259), (&#39;re&#39;, 260), (&#39;on&#39;, 261), (&#39;Ġthe&#39;, 262), (&#39;er&#39;, 263), (&#39;Ġs&#39;, 264), (&#39;at&#39;, 265), (&#39;Ġw&#39;, 266), (&#39;Ġo&#39;, 267), (&#39;en&#39;, 268), (&#39;Ġc&#39;, 269)]
+
+[(&#39;Ġprodu&#39;, 990), (&#39;Ġstill&#39;, 991), (&#39;led&#39;, 992), (&#39;ah&#39;, 993), (&#39;Ġhere&#39;, 994), (&#39;Ġworld&#39;, 995), (&#39;Ġthough&#39;, 996), (&#39;Ġnum&#39;, 997), (&#39;arch&#39;, 998), (&#39;imes&#39;, 999), (&#39;ale&#39;, 1000), (&#39;ĠSe&#39;, 1001), (&#39;ĠIf&#39;, 1002), (&#39;//&#39;, 1003), (&#39;ĠLe&#39;, 1004), (&#39;Ġret&#39;, 1005), (&#39;Ġref&#39;, 1006), (&#39;Ġtrans&#39;, 1007), (&#39;ner&#39;, 1008), (&#39;ution&#39;, 1009)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>As you get to the end of the vocabulary, you’ll be producing some pretty weird-looking esoteric tokens (because you’ll already have exhausted all of the short frequently-occurring ones):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sorted_vocab</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&#39;Revolution&#39;, 50237), (&#39;Ġsnipers&#39;, 50238), (&#39;Ġreverted&#39;, 50239), (&#39;Ġconglomerate&#39;, 50240), (&#39;Terry&#39;, 50241), (&#39;794&#39;, 50242), (&#39;Ġharsher&#39;, 50243), (&#39;Ġdesolate&#39;, 50244), (&#39;ĠHitman&#39;, 50245), (&#39;Commission&#39;, 50246), (&#39;Ġ(/&#39;, 50247), (&#39;âĢ¦.&quot;&#39;, 50248), (&#39;Compar&#39;, 50249), (&#39;Ġamplification&#39;, 50250), (&#39;ominated&#39;, 50251), (&#39;Ġregress&#39;, 50252), (&#39;ĠCollider&#39;, 50253), (&#39;Ġinformants&#39;, 50254), (&#39;Ġgazed&#39;, 50255), (&#39;&lt;|endoftext|&gt;&#39;, 50256)]
+</pre></div>
+</div>
+</div>
+</div>
+ <details>
+ <summary>Fun (optional) exercise - can you guess what the first-formed 3/4/5/6/7-letter encodings in GPT-2's vocabulary are?</summary>
+ Run this code to find out:
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lengths</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tok</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_vocab</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lengths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tok</span><span class="p">),</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">lengths</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">tok</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tok</span>
+
+<span class="k">for</span> <span class="n">length</span><span class="p">,</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">lengths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tok</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+ </details><p>Transformers in the <code class="docutils literal notranslate"><span class="pre">transformer_lens</span></code> library have a <code class="docutils literal notranslate"><span class="pre">to_tokens</span></code> method that converts text to numbers. It also prepends them with a special token called BOS (beginning of sequence) to indicate the start of a sequence. You can disable this with the <code class="docutils literal notranslate"><span class="pre">prepend_bos=False</span></code> argument.</p>
+ <details>
+ <summary>Aside - BOS token</summary>
+<p>The beginning of sequence (BOS) token is a special token used to mark the beginning of the sequence. Confusingly, in GPT-2, the End of Sequence (EOS), Beginning of Sequence (BOS) and Padding (PAD) tokens are all the same, <code class="docutils literal notranslate"><span class="pre">&lt;|endoftext|&gt;</span></code> with index <code class="docutils literal notranslate"><span class="pre">50256</span></code>.</p>
+<p>Why is this token added? Some basic intuitions are:</p>
+<ul class="simple">
+<li><p>It provides context that this is the start of a sequence, which can help the model generate more appropriate text.</p></li>
+<li><p>It can act as a “rest position” for attention heads (more on this later, when we discuss attention).</p></li>
+</ul>
+<p>TransformerLens adds this token automatically (including in forward passes of transformer models, e.g. it’s implicitly added when you call <code class="docutils literal notranslate"><span class="pre">model(&quot;Hello</span> <span class="pre">World&quot;)</span></code>). You can disable this behaviour by setting the flag <code class="docutils literal notranslate"><span class="pre">prepend_bos=False</span></code> in <code class="docutils literal notranslate"><span class="pre">to_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">to_str_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">model.forward</span></code> and any other function that converts strings to multi-token tensors.</p>
+<p><strong>Key Point: <em>If you get weird off-by-one errors, check whether there’s an unexpected <code class="docutils literal notranslate"><span class="pre">prepend_bos</span></code>!</em></strong></p>
+<p>Why are the BOS, EOS and PAD tokens the same? This is because GPT-2 is an autoregressive model, and uses these kinds of tokens in a slightly different way to other transformer families (e.g. BERT). For instance, GPT has no need to distinguish between BOS and EOS tokens, because it only processes text from left to right.</p>
+ </details></section>
+<section id="some-tokenization-annoyances">
+<h3>Some tokenization annoyances<a class="headerlink" href="#some-tokenization-annoyances" title="Link to this heading">#</a></h3>
+<p>There are a few funky and frustrating things about tokenization, which causes it to behave differently than you might expect. For instance:</p>
+<section id="whether-a-word-begins-with-a-capital-or-space-matters">
+<h4>Whether a word begins with a capital or space matters!<a class="headerlink" href="#whether-a-word-begins-with-a-capital-or-space-matters" title="Link to this heading">#</a></h4>
+</section>
+</section>
+<section id="tokenization-exploration-exercise-1">
+<h3>Tokenization Exploration (Exercise 1)<a class="headerlink" href="#tokenization-exploration-exercise-1" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Difficulty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">easy</span>
+<span class="nt">Time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~5 minutes</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>We just said that capitalization and leading spaces affect tokenization. Try it out by filling in your name below and see how the four variants get tokenized differently.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Exercise 1: Fill in your name and run the cell</span>
+<span class="n">my_word</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>  <span class="c1"># TODO: fill in your name here! (lowercase, no spaces)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;word:          &quot;</span><span class="p">,</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="n">my_word</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;space + word:  &quot;</span><span class="p">,</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">my_word</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Capitalized:   &quot;</span><span class="p">,</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="n">my_word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;space + Cap:   &quot;</span><span class="p">,</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">my_word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>word:           [&#39;&lt;|endoftext|&gt;&#39;, &#39;...&#39;]
+space + word:   [&#39;&lt;|endoftext|&gt;&#39;, &#39; ...&#39;]
+Capitalized:    [&#39;&lt;|endoftext|&gt;&#39;, &#39;...&#39;]
+space + Cap:    [&#39;&lt;|endoftext|&gt;&#39;, &#39; ...&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>What do you see? Which variants produce different numbers of tokens, and why do you think that is? Discuss with your neighbour or TA.</p>
+<section id="arithmetic-is-a-mess">
+<h4>Arithmetic is a mess.<a class="headerlink" href="#arithmetic-is-a-mess" title="Link to this heading">#</a></h4>
+<p>Length is inconsistent, common numbers bundle together.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="s2">&quot;56873+3184623=123456789-1000000000&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;&lt;|endoftext|&gt;&#39;, &#39;568&#39;, &#39;73&#39;, &#39;+&#39;, &#39;318&#39;, &#39;46&#39;, &#39;23&#39;, &#39;=&#39;, &#39;123&#39;, &#39;45&#39;, &#39;67&#39;, &#39;89&#39;, &#39;-&#39;, &#39;1&#39;, &#39;000000&#39;, &#39;000&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><h3 class="rubric" id="key-takeaways">Key Takeaways</h3>
+<ul class="simple">
+<li><p>We learn a dictionary of vocab of tokens (sub-words).</p></li>
+<li><p>We (approx) losslessly convert language to integers via tokenizing it.</p></li>
+<li><p>We convert integers to vectors via a lookup table.</p></li>
+<li><p>Note: input to the transformer is a sequence of <em>tokens</em> (ie integers), not vectors</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+<section id="text-generation">
+<h2>Text generation<a class="headerlink" href="#text-generation" title="Link to this heading">#</a></h2>
+<p>Now that we understand the basic ideas here, let’s go through the entire process of text generation, from our original string to a new token which we can append to our string and plug back into the model.</p>
+<section id="step-1-convert-text-to-tokens">
+<h3><strong>Step 1:</strong> Convert text to tokens<a class="headerlink" href="#step-1-convert-text-to-tokens" title="Link to this heading">#</a></h3>
+<p>The sequence gets tokenized, so it has shape <code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">seq_len]</span></code>. Here, the batch dimension is just one (because we only have one sequence).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reference_text</span> <span class="o">=</span> <span class="s2">&quot;I am an amazing autoregressive, decoder-only, GPT-2 style transformer. One day I will be able to generate coherent and interesting text!&quot;</span>
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_tokens</span><span class="p">(</span><span class="n">reference_text</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tokens</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[50256,    40,   716,   281,  4998,  1960,   382, 19741,    11,   875,
+         12342,    12,  8807,    11,   402, 11571,    12,    17,  3918, 47385,
+            13,  1881,  1110,   314,   481,   307,  1498,   284,  7716, 24870,
+           290,  3499,  2420,     0]], device=&#39;cuda:0&#39;)
+torch.Size([1, 34])
+[&#39;&lt;|endoftext|&gt;&#39;, &#39;I&#39;, &#39; am&#39;, &#39; an&#39;, &#39; amazing&#39;, &#39; aut&#39;, &#39;ore&#39;, &#39;gressive&#39;, &#39;,&#39;, &#39; dec&#39;, &#39;oder&#39;, &#39;-&#39;, &#39;only&#39;, &#39;,&#39;, &#39; G&#39;, &#39;PT&#39;, &#39;-&#39;, &#39;2&#39;, &#39; style&#39;, &#39; transformer&#39;, &#39;.&#39;, &#39; One&#39;, &#39; day&#39;, &#39; I&#39;, &#39; will&#39;, &#39; be&#39;, &#39; able&#39;, &#39; to&#39;, &#39; generate&#39;, &#39; coherent&#39;, &#39; and&#39;, &#39; interesting&#39;, &#39; text&#39;, &#39;!&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-map-tokens-to-logits">
+<h3><strong>Step 2:</strong> Map tokens to logits<a class="headerlink" href="#step-2-map-tokens-to-logits" title="Link to this heading">#</a></h3>
+<p>From our input of shape <code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">seq_len]</span></code>, we get output of shape <code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">seq_len,</span> <span class="pre">vocab_size]</span></code>. The <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">j,</span> <span class="pre">:]</span></code>-th element of our output is a vector of logits representing our prediction for the <code class="docutils literal notranslate"><span class="pre">j+1</span></code>-th token in the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th sequence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">logits</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">run_with_cache</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>torch.Size([1, 34, 50257])
+</pre></div>
+</div>
+</div>
+</div>
+<p>(<code class="docutils literal notranslate"><span class="pre">run_with_cache</span></code> tells the model to cache all intermediate activations. This isn’t important right now; we’ll use it extensively in Lab 2 when we inspect the model’s internals.)</p>
+</section>
+<section id="step-3-convert-the-logits-to-a-distribution-with-a-softmax">
+<h3><strong>Step 3:</strong> Convert the logits to a distribution with a softmax<a class="headerlink" href="#step-3-convert-the-logits-to-a-distribution-with-a-softmax" title="Link to this heading">#</a></h3>
+<p>This doesn’t change the shape, it is still <code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">seq_len,</span> <span class="pre">vocab_size]</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">probs</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">probs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>torch.Size([1, 34, 50257])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="implement-softmax-exercise-2">
+<h3>Implement Softmax (Exercise 2)<a class="headerlink" href="#implement-softmax-exercise-2" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Difficulty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">easy</span>
+<span class="nt">Time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~5-10 minutes</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>We just used PyTorch’s <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.softmax.html"><code class="docutils literal notranslate"><span class="pre">.softmax()</span></code></a> – now let’s implement it from scratch.</p>
+<p>Recall that softmax converts a vector of logits <span class="math notranslate nohighlight">\(\mathbf{z} = (z_1, z_2, \ldots, z_n)\)</span> into a probability distribution:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{n} e^{z_j}}
+\]</div>
+<p>The exponential (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.exp.html"><code class="docutils literal notranslate"><span class="pre">t.exp</span></code></a>) makes everything positive, and dividing by the sum makes it add up to 1.</p>
+<p>One practical issue: <span class="math notranslate nohighlight">\(e^{z_i}\)</span> overflows for large <span class="math notranslate nohighlight">\(z_i\)</span>. The fix is to subtract the max first:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{softmax}(z_i) = \frac{e^{z_i - \max(\mathbf{z})}}{\sum_{j=1}^{n} e^{z_j - \max(\mathbf{z})}}
+\]</div>
+<p>This is mathematically identical (the <span class="math notranslate nohighlight">\(e^{-\max(\mathbf{z})}\)</span> cancels), but keeps the numbers manageable.</p>
+<p>So the three steps are:</p>
+<ol class="arabic simple">
+<li><p>Subtract the max along the target dimension</p></li>
+<li><p>Exponentiate</p></li>
+<li><p>Divide by the sum</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement softmax from scratch.&quot;&quot;&quot;</span>
+    <span class="c1"># TODO: Subtract the max for numerical stability</span>
+    <span class="c1"># TODO: Exponentiate</span>
+    <span class="c1"># TODO: Normalize by the sum</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+<span class="c1"># Test against PyTorch&#39;s softmax</span>
+<span class="n">my_probs</span> <span class="o">=</span> <span class="n">my_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">my_probs</span><span class="p">,</span> <span class="n">probs</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span> <span class="s2">&quot;Your softmax doesn&#39;t match PyTorch&#39;s!&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Softmax test passed!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sum of probabilities for last position: </span><span class="si">{</span><span class="n">my_probs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> (should be 1.0)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Grab the probability distribution for the last token position</span>
+<span class="n">last_probs</span> <span class="o">=</span> <span class="n">my_probs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+
+<span class="c1"># Sort in descending order and plot the top 30 tokens</span>
+<span class="n">sorted_probs</span><span class="p">,</span> <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">last_probs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">top_n</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">top_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">[:</span><span class="n">top_n</span><span class="p">]]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">top_n</span><span class="p">),</span> <span class="n">sorted_probs</span><span class="p">[:</span><span class="n">top_n</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">top_n</span><span class="p">),</span> <span class="n">top_tokens</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Softmax output: top 30 most likely next tokens&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Show how peaked the distribution is</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top token gets </span><span class="si">{</span><span class="n">sorted_probs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of the probability&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top 10 tokens together get </span><span class="si">{</span><span class="n">sorted_probs</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The other </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">last_probs</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="si">}</span><span class="s2"> tokens share the remaining </span><span class="si">{</span><span class="n">sorted_probs</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<details><summary>Hint</summary>
+<p>Use <code class="docutils literal notranslate"><span class="pre">keepdim=True</span></code> in both <code class="docutils literal notranslate"><span class="pre">max()</span></code> and <code class="docutils literal notranslate"><span class="pre">sum()</span></code> so that broadcasting works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shifted</span> <span class="o">=</span> <span class="n">logits</span> <span class="o">-</span> <span class="n">logits</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">exp_vals</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">shifted</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">exp_vals</span> <span class="o">/</span> <span class="n">exp_vals</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</details><section id="bonus-step-what-is-the-most-likely-next-token-at-each-position">
+<h4><strong>Bonus step:</strong> What is the most likely next token at each position?<a class="headerlink" href="#bonus-step-what-is-the-most-likely-next-token-at-each-position" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">most_likely_next_tokens</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">batch_decode</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_str_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">),</span> <span class="n">most_likely_next_tokens</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&#39;&lt;|endoftext|&gt;&#39;, &#39;\n&#39;), (&#39;I&#39;, &quot;&#39;m&quot;), (&#39; am&#39;, &#39; a&#39;), (&#39; an&#39;, &#39; avid&#39;), (&#39; amazing&#39;, &#39; person&#39;), (&#39; aut&#39;, &#39;od&#39;), (&#39;ore&#39;, &#39;sp&#39;), (&#39;gressive&#39;, &#39;.&#39;), (&#39;,&#39;, &#39; and&#39;), (&#39; dec&#39;, &#39;ently&#39;), (&#39;oder&#39;, &#39;,&#39;), (&#39;-&#39;, &#39;driven&#39;), (&#39;only&#39;, &#39; programmer&#39;), (&#39;,&#39;, &#39; and&#39;), (&#39; G&#39;, &#39;IM&#39;), (&#39;PT&#39;, &#39;-&#39;), (&#39;-&#39;, &#39;only&#39;), (&#39;2&#39;, &#39;.&#39;), (&#39; style&#39;, &#39;,&#39;), (&#39; transformer&#39;, &#39;.&#39;), (&#39;.&#39;, &#39; I&#39;), (&#39; One&#39;, &#39; of&#39;), (&#39; day&#39;, &#39; I&#39;), (&#39; I&#39;, &#39; will&#39;), (&#39; will&#39;, &#39; be&#39;), (&#39; be&#39;, &#39; able&#39;), (&#39; able&#39;, &#39; to&#39;), (&#39; to&#39;, &#39; use&#39;), (&#39; generate&#39;, &#39; a&#39;), (&#39; coherent&#39;, &#39;,&#39;), (&#39; and&#39;, &#39; coherent&#39;), (&#39; interesting&#39;, &#39; data&#39;), (&#39; text&#39;, &#39; in&#39;), (&#39;!&#39;, &#39;\n&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that, in a few cases (particularly near the end of the sequence), the model accurately predicts the next token in the sequence. We might guess that common phrases the model has seen in training are easier for it to predict.</p>
+</section>
+</section>
+<section id="top-k-predictions-exercise-3">
+<h3>Top-K Predictions (Exercise 3)<a class="headerlink" href="#top-k-predictions-exercise-3" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Difficulty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">easy</span>
+<span class="nt">Time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~10 minutes</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The bonus step above shows only the single best prediction per position. But the model outputs a full distribution over 50,257 tokens – let’s look at the top 5.</p>
+<p>Write a function that takes an input string, runs it through the model, and prints the 5 most likely next tokens with their probabilities. You’ll need:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_gpt2.to_tokens(text)</span></code> to tokenize</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_gpt2(tokens)</span></code> to get logits</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logits[0,</span> <span class="pre">-1]</span></code> to grab the last position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.softmax(dim=-1)</span></code> to get probabilities</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.topk.html"><code class="docutils literal notranslate"><span class="pre">t.topk(tensor,</span> <span class="pre">k)</span></code></a> which returns <code class="docutils literal notranslate"><span class="pre">.values</span></code> and <code class="docutils literal notranslate"><span class="pre">.indices</span></code></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">show_top_k_predictions</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the top-k most likely next tokens for the given text.&quot;&quot;&quot;</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># TODO: tokenize</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># TODO: run model</span>
+    <span class="n">last_logits</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># TODO: last position only</span>
+    <span class="n">probs</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># TODO: softmax</span>
+    <span class="n">top_probs</span><span class="p">,</span> <span class="n">top_indices</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># TODO: top-k</span>
+
+    <span class="c1"># Print results</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input: </span><span class="si">{</span><span class="n">text</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> predictions for next token:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">token_str</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">top_indices</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">top_probs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">token_str</span><span class="si">!r:</span><span class="s2">15s</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">prob</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Try it!</span>
+<span class="n">show_top_k_predictions</span><span class="p">(</span><span class="s2">&quot;The capital of France is&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">show_top_k_predictions</span><span class="p">(</span><span class="s2">&quot;1 + 1 =&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<details><summary>Hint</summary>
+<p>Same indexing pattern as Step 4: <code class="docutils literal notranslate"><span class="pre">logits[0,</span> <span class="pre">-1]</span></code> gets the prediction for the next token. Then <code class="docutils literal notranslate"><span class="pre">t.topk(probs,</span> <span class="pre">k)</span></code> returns values sorted highest to lowest.</p>
+</details><section id="step-4-map-distribution-to-a-token">
+<h4><strong>Step 4:</strong> Map distribution to a token<a class="headerlink" href="#step-4-map-distribution-to-a-token" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">next_token</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">next_char</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">next_token</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">next_char</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;\n&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we’re indexing <code class="docutils literal notranslate"><span class="pre">logits[0,</span> <span class="pre">-1]</span></code>. This is because logits have shape <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">sequence_length,</span> <span class="pre">vocab_size]</span></code>, so this indexing returns the vector of length <code class="docutils literal notranslate"><span class="pre">vocab_size</span></code> representing the model’s prediction for what token follows the <strong>last</strong> token in the input sequence.</p>
+<p>In this case, we can see that the model predicts the token <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">I'</span></code>.</p>
+</section>
+</section>
+<section id="step-5-add-this-to-the-end-of-the-input-re-run">
+<h3><strong>Step 5:</strong> Add this to the end of the input, re-run<a class="headerlink" href="#step-5-add-this-to-the-end-of-the-input-re-run" title="Link to this heading">#</a></h3>
+<p>There are more efficient ways to do this (e.g. where we cache some of the values each time we run our input, so we don’t have to do as much calculation each time we generate a new value), but this doesn’t matter conceptually right now.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequence so far: </span><span class="si">{</span><span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">tokens</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Now predicting what comes after the current sequence, one token at a time...&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tokens</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">th char = </span><span class="si">{</span><span class="n">next_char</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Define new input sequence, by appending the previously generated token</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">tokens</span><span class="p">,</span> <span class="n">next_token</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Pass our new sequence through the model, to get new output</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+    <span class="c1"># Get the predicted token at the end of our sequence</span>
+    <span class="n">next_token</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Decode and print the result</span>
+    <span class="n">next_char</span> <span class="o">=</span> <span class="n">reference_gpt2</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">next_token</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequence so far: &#39;&lt;|endoftext|&gt;I am an amazing autoregressive, decoder-only, GPT-2 style transformer. One day I will be able to generate coherent and interesting text!&#39;
+Now predicting what comes after the current sequence, one token at a time...
+35th char = &#39;\n&#39;
+36th char = &#39;\n&#39;
+37th char = &#39;I&#39;
+38th char = &#39; am&#39;
+39th char = &#39; an&#39;
+40th char = &#39; amazing&#39;
+41th char = &#39; aut&#39;
+42th char = &#39;ore&#39;
+43th char = &#39;gressive&#39;
+44th char = &#39;,&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="temperature-sampling-exercise-4">
+<h3>Temperature Sampling (Exercise 4)<a class="headerlink" href="#temperature-sampling-exercise-4" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Difficulty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">easy-medium</span>
+<span class="nt">Time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~10-15 minutes</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The generation loop above always picks the most likely token (<code class="docutils literal notranslate"><span class="pre">argmax</span></code>). This is called greedy decoding – it works, but the output tends to be repetitive.</p>
+<p>We can add randomness by <em>sampling</em> from the distribution instead. A temperature parameter <span class="math notranslate nohighlight">\(T\)</span> controls how random the sampling is:</p>
+<div class="math notranslate nohighlight">
+\[
+p_i = \frac{e^{z_i / T}}{\sum_{j=1}^{n} e^{z_j / T}}
+\]</div>
+<p>This is just softmax with the logits divided by <span class="math notranslate nohighlight">\(T\)</span> first.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Temperature</p></th>
+<th class="head"><p>What happens</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(T = 1.0\)</span></p></td>
+<td><p>Normal softmax, no change</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(T &lt; 1.0\)</span></p></td>
+<td><p>Distribution gets sharper – output more predictable</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(T &gt; 1.0\)</span></p></td>
+<td><p>Distribution gets flatter – output more random</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(T \to 0\)</span></p></td>
+<td><p>Approaches greedy decoding</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Modify the generation loop: divide logits by temperature, then sample with <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.multinomial.html"><code class="docutils literal notranslate"><span class="pre">t.multinomial(probs,</span> <span class="pre">num_samples=1)</span></code></a> instead of <code class="docutils literal notranslate"><span class="pre">argmax</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">generate_with_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate text using temperature sampling.&quot;&quot;&quot;</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_tokens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_new_tokens</span><span class="p">):</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+        <span class="n">last_logits</span> <span class="o">=</span> <span class="o">...</span>        <span class="c1"># TODO: last position</span>
+        <span class="n">scaled_logits</span> <span class="o">=</span> <span class="o">...</span>      <span class="c1"># TODO: divide by temperature</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="o">...</span>              <span class="c1"># TODO: softmax</span>
+        <span class="n">next_token</span> <span class="o">=</span> <span class="o">...</span>         <span class="c1"># TODO: sample with t.multinomial</span>
+
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">tokens</span><span class="p">,</span> <span class="n">next_token</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Try different temperatures!</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;The meaning of life is&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Temperature 0.1 (nearly greedy) ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generate_with_temperature</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Temperature 0.7 (balanced) ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generate_with_temperature</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Temperature 1.5 (creative) ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generate_with_temperature</span><span class="p">(</span><span class="n">reference_gpt2</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<details><summary>Hint</summary>
+<p>The four lines inside the loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">last_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">scaled_logits</span> <span class="o">=</span> <span class="n">last_logits</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">scaled_logits</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">next_token</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">t.multinomial</span></code> samples a token index from the probability distribution. <code class="docutils literal notranslate"><span class="pre">.squeeze()</span></code> removes the extra dimension for concatenation.</p>
+</details><blockquote>
+<div><h2 class="rubric" id="id1">Key takeaways</h2>
+<ul class="simple">
+<li><p>Transformer takes in language, predicts next token (for <em>each</em> token in a causal way)</p></li>
+<li><p>We convert language to a sequence of integers with a tokenizer.</p></li>
+<li><p>We convert integers to vectors with a lookup table.</p></li>
+<li><p>Output is a vector of logits (one for each input token), we convert to a probability distn with a softmax, and can then convert this to a token (eg taking the largest logit, or sampling).</p></li>
+<li><p>We append this to the input + run again to generate more text (Jargon: <em>autoregressive</em>)</p></li>
+<li><p>Meta level point: Transformers are sequence operation models, they take in a sequence, do processing in parallel at each position, and use attention to move information between positions!</p></li>
+</ul>
+</div></blockquote>
+<p>In the next notebook (<em>Lab 2: Building a Transformer from Scratch</em>), we will open up the black box and implement each of these components (embeddings, attention heads, MLPs, and the full model) from scratch.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./nlp_transformer_tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">NLP Transformers - Tutorial Notebooks</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="NLP_Lab2_Building_Transformers.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Part 2. Transformer from Scratch.</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#content-learning-objectives">Content &amp; Learning Objectives</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-env">Install Env</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-packages">Load Packages</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-the-point-of-a-transformer">What is the point of a transformer?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-is-the-model-trained">How is the model trained?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tokens-transformer-inputs">Tokens - Transformer Inputs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-sub-units-to-vectors">Converting sub-units to vectors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-language-into-sub-units">Splitting language into sub-units</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformerlens">TransformerLens</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#some-tokenization-annoyances">Some tokenization annoyances</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#whether-a-word-begins-with-a-capital-or-space-matters">Whether a word begins with a capital or space matters!</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tokenization-exploration-exercise-1">Tokenization Exploration (Exercise 1)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#arithmetic-is-a-mess">Arithmetic is a mess.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#text-generation">Text generation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-convert-text-to-tokens"><strong>Step 1:</strong> Convert text to tokens</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-map-tokens-to-logits"><strong>Step 2:</strong> Map tokens to logits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-convert-the-logits-to-a-distribution-with-a-softmax"><strong>Step 3:</strong> Convert the logits to a distribution with a softmax</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implement-softmax-exercise-2">Implement Softmax (Exercise 2)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bonus-step-what-is-the-most-likely-next-token-at-each-position"><strong>Bonus step:</strong> What is the most likely next token at each position?</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#top-k-predictions-exercise-3">Top-K Predictions (Exercise 3)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-map-distribution-to-a-token"><strong>Step 4:</strong> Map distribution to a token</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-add-this-to-the-end-of-the-input-re-run"><strong>Step 5:</strong> Add this to the end of the input, re-run</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temperature-sampling-exercise-4">Temperature Sampling (Exercise 4)</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Leon Eshuijs
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

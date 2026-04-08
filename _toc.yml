@@ -1,0 +1,7 @@
+format: jb-book
+root: intro
+chapters:
+  - file: nlp_transformer_tutorials/NLP_Lab1_Transformer_Basics
+    title: "Lab 1 - Transformer Basics"
+  - file: nlp_transformer_tutorials/NLP_Lab2_Building_Transformers
+    title: "Lab 2 - Building Transformers"
