@@ -1,6 +1,5 @@
 # NLP Transformers - Tutorial Notebooks
-### [**Preliminary**]
-This website contains the tutorial notebooks for the NLP Transformers labs, which are part of the Master AI at the Vrije Universiteit Amsterdam. These pages and notebooks are created by [Leon Eshuijs](https://watermeleon.github.io/).
+This website contains the tutorial notebooks for the NLP Transformers labs, which are part of the [Master AI](https://vu.nl/en/education/master/artificial-intelligence) at the Vrije Universiteit Amsterdam, taught by dr. [Lucia Donatelli](https://research.vu.nl/en/persons/lucia-donatelli/). These pages and notebooks are created by [Leon Eshuijs](https://watermeleon.github.io/).
 
 Disclaimer/Credit:
 - The largest source of content of notebooks for Lab1 and Lab2 heavily based on the amazing materials from [ARENA](https://www.arena.education/) organization. 
