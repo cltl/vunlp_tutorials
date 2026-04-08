@@ -7,7 +7,7 @@ The goal of these labs is to walk you through the transformer architecture with 
 ### Labs
 - [Lab 1 - Transformer Basics](nlp_transformer_tutorials/NLP_Lab1_Transformer_Basics): tokenization, text generation, and attention
 - [Lab 2 - Building Transformers](nlp_transformer_tutorials/NLP_Lab2_Building_Transformers): implementing a transformer from scratch
-- Lab 3 - Using Pretrained Transformers: coming soon
+- Lab 3 - Using Pretrained Transformers: *coming soon ...*
 
 ---
 *Lab 1 and 2 are adapted from materials by [ARENA](https://www.arena.education/).*
