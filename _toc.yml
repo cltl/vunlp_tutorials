@@ -5,3 +5,5 @@ chapters:
     title: "Lab 1 - Transformer Basics"
   - file: nlp_transformer_tutorials/NLP_Lab2_Building_Transformers
     title: "Lab 2 - Building Transformers"
+  - file: nlp_transformer_tutorials/NLP_Lab3_Pretrained_Transformers
+    title: "Lab 3 - Pretrained Transformers"
